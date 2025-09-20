@@ -123,10 +123,45 @@ class MUDServer:
             client_socket.close()
             print(f"Client {address} disconnected")
 
+    def get_cute_player_box(self, current_user_id, room_id):
+        """Generate cute player count box"""
+        players_here = self.db.get_users_in_room(room_id)
+
+        # Get current user's name to exclude from "others" list
+        current_user_info = self.db.get_user_info(current_user_id) if current_user_id else None
+        current_username = current_user_info['username'] if current_user_info else None
+
+        # Exclude current user from the list of others
+        other_players = [p for p in players_here if p != current_username] if current_username else players_here
+        total_players = len(other_players) + (1 if current_username else 0)
+
+        # Create cute player count box
+        if other_players:
+            player_list = ', '.join(other_players)
+            content_width = max(len(player_list), 15)
+            box = f"┌─ 👥 Players ({total_players}) ─{'─' * (content_width - 10)}┐\n"
+            box += f"│ {player_list:<{content_width}} │\n"
+            box += f"└{'─' * (content_width + 2)}┘\n"
+        else:
+            box = f"┌─ 👥 Players ({total_players}) ─┐\n"
+            box += f"│ You're alone here │\n"
+            box += f"└─────────────────┘\n"
+
+        return box
+
     def send_welcome(self, session):
         """Send welcome message to new client"""
-        msg = "Welcome to the San Antonio MUD\n"
-        msg += "Type 'login' to sign in or 'signup' to create a new account\n"
+        msg = "╔════════════════════════════════════════════════════════════════╗\n"
+        msg += "║           Welcome to the San Antonio MUD (SAMUD)              ║\n"
+        msg += "║                                                                ║\n"
+        msg += "║   Experience the Alamo City through text-based adventure!     ║\n"
+        msg += "║                                                                ║\n"
+        msg += "║   Commands:                                                    ║\n"
+        msg += "║   • 'login' - Log in to existing account                      ║\n"
+        msg += "║   • 'signup' - Create a new account                           ║\n"
+        msg += "║   • 'help' - Show available commands                          ║\n"
+        msg += "║   • 'quit' - Disconnect from the server                       ║\n"
+        msg += "╚════════════════════════════════════════════════════════════════╝\n"
         msg += "> "
         session.socket.send(msg.encode('utf-8'))
 
@@ -159,8 +194,14 @@ class MUDServer:
                 session.authenticated = True
                 session.user_id = result
                 session.username = session.temp_username
+
+                # Get user info to find current room
+                user_info = self.db.get_user_info(session.user_id)
+                current_room = user_info['current_room'] if user_info else 'alamo_plaza'
+
                 msg = f"Welcome back, {session.username}!\n"
-                msg += "You are at The Alamo Plaza\n"
+                msg += "You are at The Alamo Plaza\n\n"
+                msg += self.get_cute_player_box(session.user_id, current_room)
                 msg += "Type 'help' to see available commands\n> "
                 session.socket.send(msg.encode('utf-8'))
             else:
@@ -177,6 +218,13 @@ class MUDServer:
         elif session.auth_state == 'signup_password':
             success, message = self.db.create_user(session.temp_username, data)
             if success:
+                session.authenticated = True
+                session.username = session.temp_username
+                # Get the user ID
+                auth_success, user_id = self.db.authenticate_user(session.temp_username, data)
+                if auth_success:
+                    session.user_id = user_id
+
                 msg = f"Account created! Welcome to the San Antonio MUD, {session.temp_username}!\n\n"
                 msg += "=== WELCOME GUIDE ===\n"
                 msg += "You're now in The Alamo Plaza. Here are some basic commands to get started:\n\n"
@@ -196,14 +244,10 @@ class MUDServer:
                 msg += "  'talk <npc>' - Chat with characters (try keywords!)\n\n"
                 msg += "❓ Need help? Type 'help' anytime!\n"
                 msg += "==================\n\n"
-                msg += "You appear at The Alamo Plaza\n> "
+                msg += "You appear at The Alamo Plaza\n\n"
+                msg += self.get_cute_player_box(session.user_id, 'alamo_plaza')
+                msg += "> "
                 session.socket.send(msg.encode('utf-8'))
-                session.authenticated = True
-                session.username = session.temp_username
-                # Get the user ID
-                auth_success, user_id = self.db.authenticate_user(session.temp_username, data)
-                if auth_success:
-                    session.user_id = user_id
             else:
                 msg = f"Signup failed: {message}\n"
                 msg += "Type 'signup' to try again or 'login' to sign in\n> "
@@ -334,10 +378,10 @@ class MUDServer:
         # Show players in room
         players_here = self.db.get_users_in_room(user_info['current_room'])
         players_here = [p for p in players_here if p != session.username]  # Exclude self
-        if players_here:
-            msg += f"Players here: {', '.join(players_here)}\n"
-        else:
-            msg += "Players here: none\n"
+        total_players = len(players_here) + 1  # +1 for current player
+
+        # Add cute player count box
+        msg += self.get_cute_player_box(session.user_id, user_info['current_room'])
 
         # Show NPCs in room
         npcs_here = self.db.get_npcs_in_room(user_info['current_room'])
@@ -417,10 +461,10 @@ class MUDServer:
             # Show players in new room
             players_here = self.db.get_users_in_room(new_room_id)
             players_here = [p for p in players_here if p != session.username]
-            if players_here:
-                msg += f"Players here: {', '.join(players_here)}\n"
-            else:
-                msg += "Players here: none\n"
+            total_players = len(players_here) + 1  # +1 for current player
+
+            # Add cute player count box
+            msg += self.get_cute_player_box(session.user_id, new_room_id)
 
             msg += "> "
             session.socket.send(msg.encode('utf-8'))
