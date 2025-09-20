@@ -1,126 +1,209 @@
-# Project: San Antonio Multiuser Dungeon (MUD)
+# San Antonio MUD (SAMud) 🤠
 
-## Goal
-Create a simple text-based Multiuser Dungeon that people can connect to using telnet.  
-The world should be San Antonio themed, with recognizable locations like the Alamo, the River Walk, and the Tower of the Americas.
+A text-based multiuser dungeon (MUD) game set in the vibrant city of San Antonio, Texas. Explore iconic landmarks, interact with NPCs, collect items, and chat with other players in this nostalgic multiplayer adventure.
+
+## 🌟 Features
+
+### 🗺️ **Immersive San Antonio World**
+- **7 Themed Locations**: Explore The Alamo Plaza, River Walk, The Pearl, Mission San José, Southtown, and Tower of the Americas
+- **Rich Descriptions**: Each location features detailed, atmospheric descriptions of real San Antonio landmarks
+
+### 👥 **Multiplayer Experience**
+- **Real-time Chat**: Room-based (`say`) and global (`shout`) communication
+- **Live Interactions**: See other players' actions as they happen
+- **Session Persistence**: Your progress and location are automatically saved
+
+### 🎭 **NPCs & Storytelling**
+- **5 Unique Characters**: Meet Maria the Tour Guide, Carlos the Mariachi, Chef Isabella, Father Miguel, and Diego the Muralist
+- **Keyword-based Conversations**: Talk to NPCs about specific topics (history, food, music, art, etc.)
+- **Cultural Immersion**: Learn about San Antonio's rich Mexican-American heritage
+
+### 🎒 **Item System**
+- **Collectible Items**: Find themed items in each location (historic brochure, guitar pick, churros, recipe card, etc.)
+- **Inventory Management**: Pick up, drop, and manage your items
+- **Smart Matching**: Use partial names for commands (e.g., `get guitar` instead of full item name)
+
+### 🛡️ **User Management**
+- **Secure Authentication**: Account creation and login with encrypted passwords
+- **Welcome Guide**: New players receive comprehensive command tutorials
+- **Help System**: Context-aware help and usage instructions
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.6 or higher
+- Network access (for multiplayer)
+
+### Installation & Setup
+
+1. **Clone or download the project files**:
+   ```bash
+   git clone <repository-url>
+   cd SAMud
+   ```
+
+2. **Start the server**:
+   ```bash
+   python3 server.py
+   ```
+
+3. **Connect to the game**:
+   ```bash
+   # Local connection
+   nc localhost 2323
+
+   # Or if you have telnet
+   telnet localhost 2323
+   ```
+
+### For Friends to Join
+
+When you start the server, it will display connection information:
+```
+🌐 Server accessible at:
+   Local:    nc localhost 2323
+   Network:  nc YOUR_IP_ADDRESS 2323
+```
+
+Share your IP address with friends so they can connect from other devices on the same network.
+
+## 🎮 How to Play
+
+### First Time Setup
+
+1. **Create an Account**:
+   ```
+   > signup
+   Choose a username: myname
+   Choose a password: mypass
+   ```
+
+2. **Follow the Welcome Guide**: New players receive a comprehensive tutorial with all essential commands.
+
+### Essential Commands
+
+#### 🔍 **Exploration**
+- `look` - Examine your surroundings, see exits, players, NPCs, and items
+- `north`, `south`, `east`, `west` (or `n`, `s`, `e`, `w`) - Move between rooms
+- `where` - Check your current location
+
+#### 🎒 **Items**
+- `get <item>` - Pick up items (e.g., `get brochure`, `get guitar`)
+- `drop <item>` - Drop items from your inventory
+- `inventory` (or `inv`, `i`) - View what you're carrying
+
+#### 🗣️ **NPCs**
+- `talk <npc>` - Start a conversation (e.g., `talk maria`)
+- `talk <npc> <keyword>` - Ask about specific topics (e.g., `talk carlos music`)
+
+#### 💬 **Communication**
+- `say <message>` - Talk to players in the same room
+- `shout <message>` - Send a message to all players worldwide
+- `who` - See who's currently online
+
+#### ⚙️ **System**
+- `help` - Display all available commands
+- `quit` - Save your progress and exit
+
+### Pro Tips
+
+- **Partial matching works**: You can use `get guitar` instead of typing the full item name
+- **Try keywords with NPCs**: Ask about "history", "food", "music", "art", "culture"
+- **Explore thoroughly**: Each location has unique items and NPCs to discover
+- **Use room chat**: `say` commands are great for coordinating with nearby players
+
+## 🏗️ Technical Details
+
+### Architecture
+
+- **Server**: Python 3 with socket programming for telnet compatibility
+- **Database**: SQLite for user accounts, world state, and item persistence
+- **Networking**: Multi-threaded server supporting concurrent connections
+- **Security**: PBKDF2 password hashing with salt
+
+### File Structure
+
+```
+SAMud/
+├── server.py          # Main server application
+├── database.py        # Database models and operations
+├── samud.db          # SQLite database (auto-created)
+├── CLAUDE.md         # Development documentation
+└── README.md         # This file
+```
+
+### Database Schema
+
+- **Users**: Authentication, current location, login history
+- **Rooms**: World geography, descriptions, exits
+- **NPCs**: Characters, locations, dialogue responses
+- **Items**: Collectibles, descriptions, current locations
+
+## 🎯 Gameplay Features
+
+### The San Antonio World
+
+1. **The Alamo Plaza** - Historic courtyard with Maria the Tour Guide
+2. **River Walk North** - Scenic waterway with Carlos the Mariachi
+3. **River Walk South** - Peaceful cypress-lined waters
+4. **The Pearl** - Vibrant food district with Chef Isabella
+5. **Tower of the Americas** - Iconic 750-foot observation tower
+6. **Mission San José** - "Queen of Missions" with Father Miguel
+7. **Southtown** - Artistic neighborhood with Diego the Muralist
+
+### NPCs and Their Specialties
+
+- **Maria** (Alamo Plaza): Texas history, Alamo battle, heroes
+- **Carlos** (River Walk North): Music, guitar, Mexican culture, serenades
+- **Chef Isabella** (The Pearl): Food, cooking, puffy tacos, local ingredients
+- **Father Miguel** (Mission San José): Spirituality, mission history, Rose Window
+- **Diego** (Southtown): Art, murals, culture, neighborhood gentrification
+
+### Collectible Items
+
+- **Historic Brochure** (Alamo Plaza): Learn about Texas heroes
+- **Guitar Pick** (River Walk North): Tortoiseshell memento from mariachi
+- **Fresh Churros** (River Walk South): Sweet street vendor treats
+- **Recipe Card** (The Pearl): Abuela's secret puffy taco recipe
+- **Mission Bell** (Mission San José): Brass replica of historic bells
+- **Paint Brush** (Southtown): Artist's tool with vibrant paint colors
+- **Vintage Postcard** (Tower of Americas): 1968 World's Fair memorabilia
+
+## 🛠️ Development
+
+### Commands Implementation
+
+The game features a robust command parsing system with:
+- **Flexible input**: Partial matching for items and NPCs
+- **Context-aware help**: Different help messages based on authentication state
+- **Error handling**: Helpful error messages with suggestions
+- **Real-time updates**: Immediate feedback for all actions
+
+### Multiplayer Features
+
+- **Session management**: Each player has a persistent session with authentication state
+- **Real-time broadcasting**: Actions are immediately visible to other players
+- **Room-based interactions**: Players can interact when in the same location
+- **Global communication**: Server-wide messaging system
+
+## 🤝 Contributing
+
+This project was created as a learning exercise in MUD development. Feel free to:
+- Add new rooms and expand the San Antonio world
+- Create additional NPCs with rich dialogue systems
+- Implement new item types and interactions
+- Enhance the multiplayer experience
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by classic MUD games of the 1980s and 1990s
+- Built with love for San Antonio's rich culture and history
+- Created using Claude Code for rapid development and iteration
 
 ---
 
-## Requirements
-
-### Core Features
-- Runs as a telnet-accessible server on port 2323  
-- Players can **sign up** and **log in**  
-- World contains at least **six rooms** based on San Antonio landmarks  
-- Player state (last room) is saved in **SQLite**  
-- Multiuser: players should see and interact with each other if they’re in the same room  
-- Supports both **room chat** and **global chat**  
-
-### Minimum Commands
-- `look` — shows the room description, exits, and who is there  
-- `say <message>` — sends a message to everyone in the **same room**  
-- `shout <message>` — sends a message to **all players in the world**  
-- `move <exit>` or shortcuts like `n`, `s`, `e`, `w` — moves to another room  
-- `who` — shows who is online  
-- `where` — shows your current room  
-- `help` — lists available commands  
-- `quit` — saves progress and disconnects  
-
-### The World (minimum set)
-- **The Alamo Plaza**  
-- **River Walk North**  
-- **River Walk South**  
-- **The Pearl**  
-- **Tower of the Americas**  
-- **Mission San Jose**  
-- **Southtown**  
-
-Each room should have a short description and at least one exit leading to another room.
-
----
-
-## Stretch Goals
-
-1. **NPCs (Non-Player Characters)**  
-   - Create simple NPCs that live in certain rooms  
-   - NPCs can respond to keywords (e.g. an NPC at The Pearl might talk about tacos if you mention tacos)  
-
-2. **NPC Interactions**  
-   - Allow `talk <npc>` for basic dialogue  
-   - Support simple scripted responses or branching text  
-
-3. **Tick System**  
-   - Add a timed “tick” (e.g. every 30 seconds)  
-   - NPCs move between rooms on ticks  
-   - NPC actions should be broadcast to players in the room  
-   - Example: `The mariachi band wanders south toward the River Walk South.`  
-
-4. **Extra Commands**  
-   - `emote <text>` — describe an action  
-   - `whisper <player> <message>` — send a private message  
-   - `get` / `drop` — pick up or drop items in rooms  
-
----
-
-## Session Structure
-- Everyone works on **the same project and requirements**  
-- Each participant uses their AI programming assistant to implement the system  
-- Work is divided into **sessions** with roundtable check-ins every 20 minutes to share strategies and results  
-
----
-
-## Example Interaction
-
-```text
-$ telnet localhost 2323
-Trying 127.0.0.1...
-Connected to localhost.
-Welcome to the San Antonio MUD
-Type `login` or `signup` to begin
-
-> signup
-Choose a username:
-> ATC
-Choose a password:
-> ********
-Account created. Welcome, ATC!
-
-You appear at The Alamo Plaza
-Stone walls surround you. Tourists move in and out of the courtyard.
-Exits: east, south
-Players here: none
-
-> say Hello, anyone here?
-[Room] ATC: Hello, anyone here?
-
-> shout Hola San Antonio!
-[Global] ATC: Hola San Antonio!
-[Global] maria: Welcome to the River Walk!
-
-> e
-River Walk North
-The water glistens as barges float past. Cafes line the banks.
-Exits: west, south, north
-Players here: none
-
-> who
-Online: ATC, maria
-
-> say The view here is amazing
-[Room] ATC: The view here is amazing
-
-[Global] maria: Meet me at the Pearl!
-
-> n
-The Pearl
-The old brewery is alive with music and food. Families gather in the plaza.
-Exits: south
-Players here: maria
-
-> say I found you!
-[Room] ATC: I found you!
-[Room] maria: Bienvenidos!
-
-> quit
-Goodbye, ATC. Your progress has been saved.
-Connection closed by foreign host.
+**¡Bienvenidos to the San Antonio MUD! Ready to explore the Alamo City?** 🌵
