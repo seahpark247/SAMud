@@ -1,6 +1,6 @@
 # San Antonio MUD (SAMud) 🤠
 
-![Screenshot](screenShot.png)
+<img src="./screenShot.png" alt="App Screenshot" width="400"/>
 
 A text-based multiuser dungeon (MUD) game set in the vibrant city of San Antonio, Texas. Explore iconic landmarks, interact with NPCs, collect items, and chat with other players in this nostalgic multiplayer adventure.
 
